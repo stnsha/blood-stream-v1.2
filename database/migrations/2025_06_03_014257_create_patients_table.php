@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('panels', function (Blueprint $table) {
+        Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lab_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('code');
+            $table->foreignId('doctor_code_id')->constrained()->cascadeOnDelete();
+            $table->string('icno');
+            $table->string('ic_type')->default('NRIC'); //IC or PN (passport number)
+            $table->string('age')->nullable();
+            $table->string('gender')->nullable(); //F or M
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,9 +28,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('panels');
+        Schema::dropIfExists('patients');
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('labs');
+        Schema::dropIfExists('doctor_codes');
         Schema::enableForeignKeyConstraints();
     }
 };

@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('panels', function (Blueprint $table) {
+        Schema::create('test_result_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lab_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('code');
-            $table->softDeletes();
+            $table->foreignId('test_result_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('panel_id')->constrained()->cascadeOnDelete();
+            $table->longText('text');
             $table->timestamps();
         });
     }
@@ -26,9 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('panels');
+        Schema::dropIfExists('test_result_reports');
+
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('labs');
+        Schema::dropIfExists('test_results');
         Schema::enableForeignKeyConstraints();
     }
 };

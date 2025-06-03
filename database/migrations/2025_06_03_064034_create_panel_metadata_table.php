@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('panels', function (Blueprint $table) {
+        Schema::create('panel_metadata', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lab_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('code');
+            $table->foreignId('panel_item_id')->constrained()->cascadeOnDelete();
+            $table->string('ordinal_id')->nullable();
+            $table->string('type')->nullable();
+            $table->string('identifier')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,9 +27,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('panels');
+        Schema::dropIfExists('panel_metadata');
+
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('labs');
+        Schema::dropIfExists('panel_items');
         Schema::enableForeignKeyConstraints();
     }
 };

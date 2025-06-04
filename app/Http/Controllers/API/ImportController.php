@@ -7,7 +7,7 @@ use App\Http\Requests\ImportRequest;
 use App\Models\DeliveryFile;
 use Illuminate\Http\Request;
 
-class ImportController extends Controlle       r
+class ImportController extends Controller
 {
     public function import(ImportRequest $request)
     {

@@ -6,18 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DoctorReview extends Model
+class DeliveryFile extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $casts = [
-        'compiled_results' => 'array'
-    ];
-
     protected $fillable = [
+        'delivery_info_id',
+        'message_control_id',
         'test_result_id',
-        'compiled_results',
-        'review',
-        'is_sync'
+        'status',
     ];
 }

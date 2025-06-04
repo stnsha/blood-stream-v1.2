@@ -10,10 +10,15 @@ class DeliveryFile extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const prcs = 'Processing';
+    const compl = 'Completed';
+    const fld = 'Failed';
+    const ndt = 'No data';
+
     protected $fillable = [
-        'delivery_info_id',
+        'lab_id',
         'sending_facility',
-        'file_id', //MessageControlId
+        'batch_id', //MessageControlId
         'test_result_id',
         'status',
     ];

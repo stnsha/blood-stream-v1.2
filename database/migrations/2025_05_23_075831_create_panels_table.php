@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('panels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lab_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('lab_id');
             $table->string('name');
             $table->string('code');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
         });
     }
 
@@ -27,8 +29,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('panels');
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('labs');
-        Schema::enableForeignKeyConstraints();
     }
 };

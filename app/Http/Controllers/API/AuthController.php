@@ -36,43 +36,32 @@ class AuthController extends Controller
                 ->first();
 
             if ($existingCredential) {
-                $expiresAt = $existingCredential->created_at->timestamp + $existingCredential->expires_at;
-
-                if (now()->timestamp < $expiresAt) {
-                    return response()->json([
-                        'data' => [
-                            'message' => 'Lab session is still active. Please login.'
-                        ]
-                    ], 403);
-                }
+                return response()->json([
+                    'data' => [
+                        'message' => 'Lab credential already exists. Please login.'
+                    ]
+                ], 409);
             }
 
             do {
-                $username = $lab->code . '|' . strtoupper(strtolower(Str::random(3)));
+                $username = $lab->code . $lab->id . strtoupper(strtolower(Str::random(4)));
             } while (LabCredential::where('username', $username)->exists());
 
 
-            $plainPassword = Str::random(10);
-            $expiresAt = Auth::guard('lab')->factory()->getTTL() * 60;
+            $plainPassword = Str::random(15);
 
-            $credential = LabCredential::create([
+            LabCredential::create([
                 'lab_id' => $lab->id,
                 'username' => $username,
                 'password' => bcrypt($plainPassword),
-                'expires_at' => $expiresAt,
                 'role' => 'lab',
                 'is_active' => true,
             ]);
 
-            $token = Auth::guard('lab')->login($credential);
-
             return response()->json([
                 'message' => 'Lab credential successfully created.',
                 'username' => $username,
-                'password' => $plainPassword,
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => $expiresAt
+                'password' => $plainPassword
             ]);
         }
     }
@@ -85,10 +74,19 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        $expiresIn = Auth::guard('lab')->factory()->getTTL() * 60;
+
+        $labCredential = LabCredential::where('username', $credentials['username'])->first();
+
+        if ($labCredential) {
+            $labCredential->expires_at = $expiresIn;
+            $labCredential->save();
+        }
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => Auth::guard('lab')->factory()->getTTL() * 60
+            'expires_in' => $expiresIn
         ]);
     }
 
@@ -126,6 +124,21 @@ class AuthController extends Controller
                     'message' => 'Session expired. Please log in again.'
                 ]
             ], 401);
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            Auth::guard('lab')->logout();
+
+            return response()->json([
+                'message' => 'Successfully logged out.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to logout, please try again.'
+            ], 500);
         }
     }
 }

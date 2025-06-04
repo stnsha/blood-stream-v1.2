@@ -14,7 +14,6 @@ class PanelItems extends Model
         'panel_id',
         'name',
         'decimal_point',
-        'ref_range',
         'unit',
         'ordinal_id',
         'type',

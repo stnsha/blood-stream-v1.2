@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('panel_metadata', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('panel_item_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('panel_item_id');
             $table->string('ordinal_id')->nullable();
             $table->string('type')->nullable();
             $table->string('identifier')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('panel_item_id')->references('id')->on('panel_items')->onDelete('cascade');
         });
     }
 
@@ -28,9 +30,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('panel_metadata');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('panel_items');
-        Schema::enableForeignKeyConstraints();
     }
 };

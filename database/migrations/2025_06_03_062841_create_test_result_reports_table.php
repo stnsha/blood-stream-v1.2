@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('test_result_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('test_result_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('panel_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('test_result_id');
+            $table->unsignedBigInteger('panel_id');
             $table->longText('text');
             $table->timestamps();
+
+            $table->foreign('test_result_id')->references('id')->on('test_results')->onDelete('cascade');
+            $table->foreign('panel_id')->references('id')->on('panels')->onDelete('cascade');
         });
     }
 
@@ -26,9 +29,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('test_result_reports');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('test_results');
-        Schema::enableForeignKeyConstraints();
     }
 };

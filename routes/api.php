@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ImportController;
 use App\Http\Controllers\TestingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,9 +25,14 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('/register', 'register')->name('register');
     Route::post('/login', 'login')->name('login');
     Route::post('/refresh', 'refresh')->name('refresh');
+    Route::post('/logout', 'logout')->name('logout');
 });
 
 
 Route::middleware(['api.auth'])->group(function () {
     Route::resource('testing', TestingController::class)->only('index', 'store', 'show', 'update', 'destroy');
+
+    Route::prefix('import')->controller(ImportController::class)->group(function () {
+        Route::post('/store', 'import')->name('store');
+    });
 });

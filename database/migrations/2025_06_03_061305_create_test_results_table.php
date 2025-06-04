@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('test_results', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_code_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('doctor_code_id');
+            $table->unsignedBigInteger('patient_id');
             $table->string('ref_id')->nullable();
             $table->string('bill_code')->nullable();
             $table->string('lab_no');
@@ -23,6 +23,9 @@ return new class extends Migration
             $table->dateTime('reported_date')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('doctor_code_id')->references('id')->on('doctor_codes')->onDelete('cascade');
+            $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
         });
     }
 
@@ -32,10 +35,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('test_results');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('doctor_codes');
-        Schema::dropIfExists('patients');
-        Schema::enableForeignKeyConstraints();
     }
 };

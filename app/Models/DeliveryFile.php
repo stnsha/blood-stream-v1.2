@@ -12,7 +12,8 @@ class DeliveryFile extends Model
 
     protected $fillable = [
         'delivery_info_id',
-        'message_control_id',
+        'sending_facility',
+        'file_id', //MessageControlId
         'test_result_id',
         'status',
     ];

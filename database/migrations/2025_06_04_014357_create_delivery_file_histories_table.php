@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('delivery_file_histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('delivery_file_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('delivery_file_id');
             $table->longText('message');
             $table->string('err_code');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('delivery_file_id')->references('id')->on('delivery_files')->onDelete('cascade');
         });
     }
 
@@ -27,9 +29,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('delivery_file_histories');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('delivery_files');
-        Schema::enableForeignKeyConstraints();
     }
 };

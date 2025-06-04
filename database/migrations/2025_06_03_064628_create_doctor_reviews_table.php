@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('doctor_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('test_result_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('test_result_id');
             $table->json('compiled_results');
             $table->longText('review');
             $table->boolean('is_sync')->default(false);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('test_result_id')->references('id')->on('test_results')->onDelete('cascade');
         });
     }
 
@@ -28,9 +30,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('doctor_reviews');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('test_results');
-        Schema::enableForeignKeyConstraints();
     }
 };

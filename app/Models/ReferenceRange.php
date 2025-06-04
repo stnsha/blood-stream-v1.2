@@ -6,13 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DeliveryInfo extends Model
+class ReferenceRange extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'lab_id',
-        'batch_name',
-        'status'
-    ];
+    protected $fillable = ['panel_item_id', 'value'];
 }

@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('delivery_files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('delivery_info_id')->constrained()->cascadeOnDelete();
-            $table->string('message_control_id');
-            $table->foreignId('test_result_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('lab_id');
+            $table->string('sending_facility');
+            $table->string('file_id');
+            $table->unsignedBigInteger('test_result_id');
             $table->string('status');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
+            $table->foreign('test_result_id')->references('id')->on('test_results')->onDelete('cascade');
         });
     }
 
@@ -28,10 +32,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('delivery_files');
-
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('delivery_infos');
-        Schema::dropIfExists('test_results');
-        Schema::enableForeignKeyConstraints();
     }
 };

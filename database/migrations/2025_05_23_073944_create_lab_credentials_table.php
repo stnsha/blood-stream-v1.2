@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('lab_credentials', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lab_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('lab_id');
             $table->string('username')->index();
             $table->string('password');
             $table->integer('expires_at')->nullable()->index();
@@ -21,6 +21,8 @@ return new class extends Migration
             $table->boolean('is_active')->nullable()->default(true); //1 = active
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
         });
     }
 
@@ -30,8 +32,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('lab_credentials');
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('labs');
-        Schema::enableForeignKeyConstraints();
     }
 };

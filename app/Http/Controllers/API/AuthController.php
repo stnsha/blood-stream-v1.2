@@ -90,43 +90,6 @@ class AuthController extends Controller
         ]);
     }
 
-    public function refresh(APIAuthRequest $request)
-    {
-        $credentials = $request->only($this->username(), 'password');
-
-        $credential = LabCredential::where('username', $credentials['username'])->first();
-
-        if (!$credential || !Hash::check($credentials['password'], $credential->password)) {
-            return response()->json([
-                'data' => [
-                    'message' => 'Invalid username or password.'
-                ]
-            ], 401);
-        }
-
-        $expiresAt = $credential->created_at->timestamp + $credential->expires_at;
-
-        if (now()->timestamp < $expiresAt) {
-            $newToken = Auth::guard('lab')->login($credential);
-            $updatedExpiresAt = Auth::guard('lab')->factory()->getTTL() * 60;
-
-            return response()->json([
-                'data' => [
-                    'message' => 'Token refreshed successfully.',
-                    'access_token' => $newToken,
-                    'token_type' => 'bearer',
-                    'expires_in' => $updatedExpiresAt
-                ]
-            ], 200);
-        } else {
-            return response()->json([
-                'data' => [
-                    'message' => 'Session expired. Please log in again.'
-                ]
-            ], 401);
-        }
-    }
-
     public function logout()
     {
         try {

@@ -17,6 +17,14 @@ if (!function_exists('generate_lab_path')) {
     }
 }
 
+if (!function_exists('get_email_abbrv')) {
+    function get_email_abbrv($email)
+    {
+        $localPart = strstr($email, '@', true);
+        return strtoupper(substr($localPart, 0, 3));
+    }
+}
+
 if (!function_exists('calculate_age')) {
     function calculate_age($icno)
     {

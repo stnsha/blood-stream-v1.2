@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('lab_credentials', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('lab_id');
             $table->string('username')->index();
             $table->string('password');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('lab_id')->references('id')->on('labs')->onDelete('cascade');
         });
     }

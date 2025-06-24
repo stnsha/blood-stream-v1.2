@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InnoquestMetadata extends Model
+class PanelMetadata extends Model
 {
     use HasFactory, SoftDeletes;
 

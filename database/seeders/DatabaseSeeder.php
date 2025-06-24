@@ -18,18 +18,28 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        User::create([
-            'name' => 'superadmin',
-            'email' => 'anasuharosli.alphac@gmail.com',
-            'password' => Hash::make('anasuha97')
-        ]);
+        // User::create([
+        //     'name' => 'superadmin',
+        //     'email' => 'anasuharosli.alphac@gmail.com',
+        //     'password' => bcrypt('anasuha97')
+        // ]);
 
-        $name = 'Innoquest Pathology Sdn Bhd';
-        Lab::create([
-            'name' => $name,
-            'path' => generate_lab_path($name),
-            'code' =>  generate_lab_code($name),
-            'status' => 1,
-        ]);
+        $labs = [
+            [
+                'name' => 'Dummy Lab Sdn Bhd',
+            ],
+            [
+                'name' => 'Innoquest Pathology Sdn Bhd',
+            ],
+        ];
+
+        foreach ($labs as $lab) {
+            Lab::create([
+                'name' => $lab['name'],
+                'path' => generate_lab_path($lab['name']),
+                'code' => generate_lab_code($lab['name']),
+                'status' => 1,
+            ]);
+        }
     }
 }

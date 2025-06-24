@@ -11,7 +11,7 @@ class LabCredential extends Authenticatable implements JWTSubject
 {
     use Notifiable, SoftDeletes;
 
-    protected $fillable = ['lab_id', 'username', 'password', 'expires_at', 'role', 'is_active'];
+    protected $fillable = ['user_id', 'lab_id', 'username', 'password', 'expires_at', 'role', 'is_active'];
 
     protected $hidden = ['password'];
 

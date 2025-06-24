@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('test_result_id');
             $table->unsignedBigInteger('panel_id');
             $table->longText('text');
+            $table->boolean('is_completed')->default(false);
             $table->timestamps();
 
             $table->foreign('test_result_id')->references('id')->on('test_results')->onDelete('cascade');

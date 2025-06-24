@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lab_id');
             $table->string('name');
             $table->string('code');
+            $table->string('sequence')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

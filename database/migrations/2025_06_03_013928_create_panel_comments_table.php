@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('panel_item_id');
             $table->longText('comment');
+            $table->string('sequence')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

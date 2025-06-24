@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('value')->nullable();
             $table->string('flag')->nullable();
             $table->longText('test_notes')->nullable();
-            $table->string('status');
+            $table->string('status')->nullable();
             $table->boolean('is_completed')->default(false);
             $table->softDeletes();
             $table->timestamps();

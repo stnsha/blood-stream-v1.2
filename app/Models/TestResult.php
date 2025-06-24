@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @OA\Info(
  *     version="1.0",
  *     title="Blood Stream v1 API",
- *     description="Backend API for referral",
+ *     description="This API facilitates the secure and structured integration of blood test result data between external laboratory systems and Alpro’s internal infrastructure. It enables seamless transmission, standardization, and accessibility of diagnostic information for clinical interpretation by authorized healthcare professionals.",
  *     @OA\Contact(name="Digital Innovation")
  * )
  *  * @OA\Server(
@@ -37,6 +37,7 @@ class TestResult extends Model
         'lab_no',
         'collected_date',
         'received_date',
-        'reported_date'
+        'reported_date',
+        'is_completed'
     ];
 }

@@ -25,7 +25,7 @@ class APIAuthMiddleware
 
         $labCredential = LabCredential::where('lab_id', $user->lab_id)->first();
 
-        if ($labCredential && $labCredential->role !== 'lab') {
+        if ($labCredential && !in_array($labCredential->role, ['lab', 'admin'])) {
             return response()->json(['error' => 'Access restricted'], 403);
         }
 

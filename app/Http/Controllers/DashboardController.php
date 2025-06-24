@@ -9,7 +9,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        dd(Auth::guard('web')->check(), Auth::guard('lab')->check());
+        // dd(Auth::guard('web')->check(), Auth::guard('lab')->check());
 
         $user_name = Auth::user()->name;
         return view('dashboard', compact('user_name'));

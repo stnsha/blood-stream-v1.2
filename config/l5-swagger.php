@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'L5 Swagger UI',
+                'title' => 'Blood Stream v1',
             ],
 
             'routes' => [
@@ -65,9 +65,9 @@ return [
              * Middleware allows to prevent unexpected access to API documentation
              */
             'middleware' => [
-                'api' => [],
+                'api' => ['auth', 'web'],
                 'asset' => [],
-                'docs' => ['web'],
+                'docs' => ['web', 'auth'],
                 'oauth2_callback' => [],
             ],
 

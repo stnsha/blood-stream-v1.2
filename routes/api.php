@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ImportController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\TestingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +34,9 @@ Route::middleware(['api.auth'])->group(function () {
 
     Route::prefix('import')->controller(ImportController::class)->group(function () {
         Route::post('/store', 'import')->name('store');
+    });
+
+    Route::controller(PatientController::class)->group(function () {
+        Route::post('/patientResults', 'patientResults')->name('patientResults');
     });
 });

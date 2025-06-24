@@ -31,4 +31,13 @@ class LoginController extends Controller
         }
         return back()->withErrors(['login' => 'Invalid email or password. Please contact admin.']);
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 }

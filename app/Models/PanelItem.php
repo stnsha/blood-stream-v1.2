@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PanelItems extends Model
+class PanelItem extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -15,8 +15,6 @@ class PanelItems extends Model
         'name',
         'decimal_point',
         'unit',
-        'ordinal_id',
-        'type',
-        'identifier'
+        'sequence'
     ];
 }

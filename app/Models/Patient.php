@@ -16,5 +16,5 @@ class Patient extends Model
     const female = 'F';
     const male = 'M';
 
-    protected $fillable = ['doctor_code_id', 'icno', 'ic_type', 'age', 'gender'];
+    protected $fillable = ['icno', 'ic_type', 'age', 'gender'];
 }

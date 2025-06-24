@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->string('sequence')->nullable();
+            $table->string('overall_notes')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

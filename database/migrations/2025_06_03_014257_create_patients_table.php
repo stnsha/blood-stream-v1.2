@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('doctor_code_id');
             $table->string('icno');
             $table->string('ic_type')->default('NRIC'); //IC or PN (passport number)
             $table->string('age')->nullable();
             $table->string('gender')->nullable(); //F or M
             $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('doctor_code_id')->references('id')->on('doctor_codes')->onDelete('cascade');
         });
     }
 

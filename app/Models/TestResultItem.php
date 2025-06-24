@@ -16,6 +16,7 @@ class TestResultItem extends Model
         'value',
         'flag',
         'test_notes',
-        'status'
+        'status',
+        'is_completed'
     ];
 }

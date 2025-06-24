@@ -10,7 +10,6 @@ use App\Models\Patient;
 use App\Models\ReferenceRange;
 use App\Models\TestResult;
 use App\Models\TestResultItem;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +22,7 @@ class PatientController extends Controller
         try {
             if ($validated) {
                 DB::beginTransaction();
-                // $user = Auth::guard('lab')->user();
+                $user = Auth::guard('lab')->user();
                 $lab_id = $user->lab_id;
                 $patient_icno = $validated['patient_icno'];
                 $ic_type = $validated['ic_type'];
@@ -153,9 +152,15 @@ class PatientController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
+            /** @var \Illuminate\Http\Request $request */
             Log::error('Failed to save data', [
                 'exception' => $e->getMessage(),
+                'data' => json_encode($request->all()),
             ]);
+
+            return response()->json([
+                'error' => 'Failed to save data',
+            ], 500);
         }
     }
 

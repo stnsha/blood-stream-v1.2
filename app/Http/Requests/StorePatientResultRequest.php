@@ -109,6 +109,7 @@ class StorePatientResultRequest extends FormRequest
             }
         }
 
+        /** @var \Illuminate\Http\Request $this */
         $this->merge([
             'patient_icno' => $icInfo['icno'],
             'ic_type' => $icInfo['type'],

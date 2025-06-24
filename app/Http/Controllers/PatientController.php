@@ -13,6 +13,7 @@ use App\Models\TestResultItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PatientController extends Controller
 {
@@ -22,7 +23,7 @@ class PatientController extends Controller
         try {
             if ($validated) {
                 DB::beginTransaction();
-                $user = Auth::guard('lab')->user();
+                // $user = Auth::guard('lab')->user();
                 $lab_id = $user->lab_id;
                 $patient_icno = $validated['patient_icno'];
                 $ic_type = $validated['ic_type'];
@@ -143,14 +144,20 @@ class PatientController extends Controller
                 }
 
                 DB::commit();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Blood test results successfully submitted.',
+                    'result_id' => $test_result_id
+                ]);
             }
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return response()->json([
-                'error' => 'Failed to save data',
+            Log::error('Failed to save data', [
                 'exception' => $e->getMessage(),
-            ], 500);
+            ]);
         }
     }
+
+    public function  resultDelivery() {}
 }

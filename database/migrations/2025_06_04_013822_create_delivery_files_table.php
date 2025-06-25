@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lab_id');
             $table->string('sending_facility');
             $table->string('batch_id');
-            $table->unsignedBigInteger('test_result_id');
+            $table->unsignedBigInteger('test_result_id')->nullable();
             $table->string('status');
             $table->boolean('is_completed')->default(false);
             $table->softDeletes();

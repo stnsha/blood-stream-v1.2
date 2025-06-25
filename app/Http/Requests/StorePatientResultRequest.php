@@ -35,6 +35,8 @@ class StorePatientResultRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'sending_facility' => 'nullable|string',
+            'batch_id' => 'nullable|string',
             'patient_icno' => 'required|string',
             'ic_type' => 'in:NRIC,PP',
             'patient_age' => 'nullable|integer',
@@ -111,6 +113,8 @@ class StorePatientResultRequest extends FormRequest
 
         /** @var \Illuminate\Http\Request $this */
         $this->merge([
+            'sending_facility' => null,
+            'batch_id' => null,
             'patient_icno' => $icInfo['icno'],
             'ic_type' => $icInfo['type'],
             'patient_gender' => $icInfo['gender'],

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePatientResultRequest;
+use App\Models\DeliveryFile;
+use App\Models\DeliveryFileHistory;
 use App\Models\DoctorCode;
 use App\Models\Panel;
 use App\Models\PanelItem;
@@ -10,6 +12,7 @@ use App\Models\Patient;
 use App\Models\ReferenceRange;
 use App\Models\TestResult;
 use App\Models\TestResultItem;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +27,22 @@ class PatientController extends Controller
                 DB::beginTransaction();
                 $user = Auth::guard('lab')->user();
                 $lab_id = $user->lab_id;
+
+                if (filled($validated['sending_facility']) && $validated['sending_facility'] === 'INN') {
+                    $sending_facility = $validated['sending_facility'];
+                    $batch_id = $validated['batch_id'] ?? null;
+                } else {
+                    $sending_facility = $user->lab->code . 'API';
+                    $batch_id = now()->format('YmdHis') . $user->lab->code;
+                }
+
+                $deliveryFile = DeliveryFile::create([
+                    'lab_id' => $lab_id,
+                    'sending_facility' => $sending_facility,
+                    'batch_id' => $batch_id,
+                    'status' => DeliveryFile::prcs,
+                ]);
+
                 $patient_icno = $validated['patient_icno'];
                 $ic_type = $validated['ic_type'];
                 $patient_age = $validated['patient_age'];
@@ -124,7 +143,7 @@ class PatientController extends Controller
                                 $ref_range_id = $ref_range->id;
                             }
 
-                            $test_result_item = TestResultItem::firstOrCreate(
+                            TestResultItem::firstOrCreate(
                                 [
 
                                     'test_result_id' => $test_result_id,
@@ -142,6 +161,11 @@ class PatientController extends Controller
                     }
                 }
 
+                $deliveryFile->update([
+                    'test_result_id' => $test_result_id,
+                    'status' => DeliveryFile::compl,
+                ]);
+
                 DB::commit();
                 return response()->json([
                     'status' => 'success',
@@ -158,11 +182,21 @@ class PatientController extends Controller
                 'data' => json_encode($request->all()),
             ]);
 
+            if (isset($deliveryFile)) {
+                DeliveryFileHistory::create([
+                    'delivery_file_id' => $deliveryFile->id,
+                    'message' => $e->getMessage(),
+                    'err_code' => '500',
+                ]);
+
+                $deliveryFile->update(['status' => DeliveryFile::fld]);
+            }
+
             return response()->json([
                 'error' => 'Failed to save data',
             ], 500);
         }
     }
 
-    public function  resultDelivery() {}
+    public function importCsv() {}
 }

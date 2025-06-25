@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'api' => [
+        'url' => env('API_BASE_URL', 'http://127.0.0.1:8000'),
+        'login' => env('API_LOGIN_ENDPOINT'),
+        'username' => env('API_USERNAME'),
+        'password' => env('API_PASSWORD'),
+    ],
+
 ];

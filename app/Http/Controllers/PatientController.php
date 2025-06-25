@@ -31,17 +31,12 @@ class PatientController extends Controller
                 if (filled($validated['sending_facility']) && $validated['sending_facility'] === 'INN') {
                     $sending_facility = $validated['sending_facility'];
                     $batch_id = $validated['batch_id'] ?? null;
+                    $is_completed = true;
                 } else {
                     $sending_facility = $user->lab->code . 'API';
                     $batch_id = now()->format('YmdHis') . $user->lab->code;
+                    $is_completed = false;
                 }
-
-                $deliveryFile = DeliveryFile::create([
-                    'lab_id' => $lab_id,
-                    'sending_facility' => $sending_facility,
-                    'batch_id' => $batch_id,
-                    'status' => DeliveryFile::prcs,
-                ]);
 
                 $patient_icno = $validated['patient_icno'];
                 $ic_type = $validated['ic_type'];
@@ -91,7 +86,7 @@ class PatientController extends Controller
                     'collected_date' => $collected_date,
                     'received_date' => $received_date,
                     'reported_date' => $reported_date,
-                    'is_completed' => false
+                    'is_completed' => $is_completed
                 ]);
 
                 $test_result_id = $test_result->id;
@@ -133,9 +128,7 @@ class PatientController extends Controller
                             if (filled($test['ref_range'])) {
                                 $ref_range = ReferenceRange::firstOrCreate(
                                     [
-                                        'value' => $test['ref_range']
-                                    ],
-                                    [
+                                        'value' => $test['ref_range'],
                                         'panel_item_id' => $panel_item_id,
                                     ]
                                 );
@@ -161,10 +154,18 @@ class PatientController extends Controller
                     }
                 }
 
-                $deliveryFile->update([
-                    'test_result_id' => $test_result_id,
-                    'status' => DeliveryFile::compl,
-                ]);
+                $deliveryFile = DeliveryFile::firstOrCreate(
+                    [
+
+                        'test_result_id' => $test_result_id,
+                    ],
+                    [
+                        'lab_id' => $lab_id,
+                        'sending_facility' => $sending_facility,
+                        'batch_id' => $batch_id,
+                        'status' => DeliveryFile::compl,
+                    ]
+                );
 
                 DB::commit();
                 return response()->json([

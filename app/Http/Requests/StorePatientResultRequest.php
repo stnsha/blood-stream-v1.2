@@ -45,16 +45,16 @@ class StorePatientResultRequest extends FormRequest
             'lab_no' => 'required|string',
             'bill_code' => 'nullable|string',
             'doctor_code' => 'required|string',
-            'received_date' => 'required|date_format:Y-m-d H:i:s',
-            'reported_date' => 'required|date_format:Y-m-d H:i:s',
-            'collected_date' => 'required|date_format:Y-m-d H:i:s',
+            'received_date' => 'nullable',
+            'reported_date' => 'nullable',
+            'collected_date' => 'nullable',
 
             'results' => 'required|array',
             'results.*' => 'required|array',
             'results.*.panel_code' => 'nullable|string',
-            'results.*.panel_sequence' => 'nullable|integer|min:1',
+            'results.*.panel_sequence' => 'nullable|integer',
             'results.*.overall_notes' => 'nullable|string',
-            'results.*.tests' => 'required|array|min:1',
+            'results.*.tests' => 'required|array',
 
             'results.*.tests.*.test_name' => 'required|string',
             'results.*.tests.*.result_value' => 'nullable|string',
@@ -63,7 +63,7 @@ class StorePatientResultRequest extends FormRequest
             'results.*.tests.*.unit' => 'nullable|string',
             'results.*.tests.*.ref_range' => 'nullable|string',
             'results.*.tests.*.test_note' => 'nullable|string',
-            'results.*.tests.*.item_sequence' => 'nullable|integer|min:1',
+            'results.*.tests.*.item_sequence' => 'nullable|integer',
         ];
     }
 
@@ -164,7 +164,7 @@ class StorePatientResultRequest extends FormRequest
         $timestamp = strtotime($date);
 
         if ($timestamp === false) {
-            return '0000-00-00 00:00:00';
+            return null;
         }
 
         return date('Y-m-d H:i:s', $timestamp);

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ImportCsvFile implements ShouldQueue
 {
@@ -38,15 +40,13 @@ class ImportCsvFile implements ShouldQueue
     /**
      * Execute the job.
      */
+
+
     public function handle(): void
     {
         $disk = Storage::disk('sftp');
-
         $stream = $disk->readStream($this->filepath);
         if (!$stream) return;
-
-        $header = null;
-        $batch = [];
 
         $filename = pathinfo($this->filepath, PATHINFO_FILENAME);
         $sending_facility = $filename;
@@ -54,16 +54,23 @@ class ImportCsvFile implements ShouldQueue
 
         $raw = $disk->get($this->filepath);
         Storage::disk('local')->put("temp/{$filename}.csv", $raw);
-
         $localPath = storage_path("app/temp/{$filename}.csv");
 
-        $rows = array_map('str_getcsv', file($localPath));
-        $total_rows = max(count($rows) - 1, 0);
-        Log::info("Total rows in {$filename}: {$total_rows}");
+        $reader = IOFactory::createReader('Csv');
+        $reader->setReadDataOnly(true);
+        $reader->setInputEncoding('UTF-8');
+        $reader->setDelimiter(',');
+        $reader->setEnclosure('"');
+        $reader->setSheetIndex(0);
 
-        $stream = fopen($localPath, 'r');
+        $spreadsheet = $reader->load($localPath);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
 
-        while (($row = fgetcsv($stream)) !== false) {
+        $header = null;
+        $grouped = [];
+
+        foreach ($rows as $row) {
             if (!$header) {
                 $header = $row;
                 continue;
@@ -77,31 +84,63 @@ class ImportCsvFile implements ShouldQueue
                 continue;
             }
 
-            $data = array_combine($header, array_map(function ($v) {
-                return is_numeric($v) && strlen((string) (int) $v) >= 11 ? number_format($v, 0, '', '') : $v;
-            }, $row));
+            $mapped = [];
+            foreach ($header as $index => $key) {
+                $value = $row[$index];
+                if (strtolower($key) === 'patient_icno') {
+                    if (is_numeric($value) && stripos((string) $value, 'e') !== false) {
+                        $value = number_format($value, 0, '', '');
+                    }
+                    $value = preg_replace('/[^0-9]/', '', (string) $value);
+                }
+                $mapped[$key] = (string) $value;
+            }
 
-            $data = $this->checkNull($data);
+            $data = $this->checkNull($mapped);
             $formatted = $this->formatData($data);
 
             if ($formatted) {
-                $formatted['sending_facility'] = $sending_facility;
-                $formatted['batch_id'] = $batch_id;
-                $formatted['lab_code'] = 'INN';
-                $batch[] = $formatted;
-            }
+                $labNo = $formatted['lab_no'];
 
-            Log::info('Formatted entry', ['entry' => ['batch' => $batch]]);
-            if (count($batch) === 100) {
-                $this->sendDataToApi($batch);
-                $batch = [];
+                if (!isset($grouped[$labNo])) {
+                    $grouped[$labNo] = [
+                        'patient_icno' => $formatted['patient_icno'],
+                        'reference_id' => $formatted['reference_id'],
+                        'lab_no' => $labNo,
+                        'bill_code' => $formatted['bill_code'],
+                        'doctor_code' => $formatted['doctor_code'],
+                        'received_date' => $formatted['received_date'],
+                        'reported_date' => $formatted['reported_date'],
+                        'collected_date' => $formatted['collected_date'],
+                        'results' => [],
+                        'sending_facility' => $sending_facility,
+                        'batch_id' => $batch_id,
+                        'lab_code' => 'INN',
+                    ];
+                }
+
+                foreach ($formatted['results'] as $panelName => $panelData) {
+                    if (!isset($grouped[$labNo]['results'][$panelName])) {
+                        $grouped[$labNo]['results'][$panelName] = $panelData;
+                    } else {
+                        $grouped[$labNo]['results'][$panelName]['tests'] = array_merge(
+                            $grouped[$labNo]['results'][$panelName]['tests'],
+                            $panelData['tests']
+                        );
+                    }
+                }
             }
         }
 
-        $this->sendDataToApi($batch);
-        fclose($stream);
+        $finalBatch = array_values($grouped);
+        foreach ($finalBatch as $chunk) {
+            Log::info('Chunk data', ['data' => $chunk]);
+            $this->sendDataToApi($chunk);
+        }
+
         Log::info('Job completed: ' . $this->filepath);
     }
+
 
     protected function formatData($row)
     {
@@ -182,9 +221,8 @@ class ImportCsvFile implements ShouldQueue
     private function convertToDateTimeString($date)
     {
         $timestamp = strtotime($date);
-        return $timestamp === false ? '0000-00-00 00:00:00' : date('Y-m-d H:i:s', $timestamp);
+        return $timestamp === false ? null : date('Y-m-d H:i:s', $timestamp);
     }
-
     private function checkRefId($refid)
     {
         $refid = trim($refid);

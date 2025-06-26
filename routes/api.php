@@ -36,7 +36,8 @@ Route::middleware(['api.auth', 'throttle:1000,1'])->group(function () {
         Route::post('/store', 'import')->name('store');
     });
 
-    Route::controller(PatientController::class)->group(function () {
-        Route::post('/patientResults', 'patientResults')->name('patientResults');
+    Route::prefix('patient')->controller(PatientController::class)->group(function () {
+        Route::post('/labResults', 'labResults')->name('labResults');
+        Route::post('/panelResults', 'panelResults')->name('panelResults');
     });
 });

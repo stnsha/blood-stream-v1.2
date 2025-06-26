@@ -20,6 +20,7 @@ class DeliveryFile extends Model
         'sending_facility',
         'batch_id', //MessageControlId
         'test_result_id',
+        'json_content',
         'status',
     ];
 }

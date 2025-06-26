@@ -80,7 +80,7 @@ class StorePatientResultRequest extends FormRequest
     {
         $cleanedResults = [];
 
-        $icInfo = $this->checkIcno($this->patient_icno);
+        $icInfo = checkIcno($this->patient_icno);
 
         if (is_array($this->results)) {
             foreach ($this->results as $panel => $data) {
@@ -119,54 +119,10 @@ class StorePatientResultRequest extends FormRequest
             'ic_type' => $icInfo['type'],
             'patient_gender' => $icInfo['gender'],
             'patient_age' => $icInfo['age'],
-            'received_date' => $this->convertToDateTimeString($this->received_date),
-            'reported_date' => $this->convertToDateTimeString($this->reported_date),
-            'collected_date' => $this->convertToDateTimeString($this->collected_date),
+            'received_date' => convertToDateTimeString($this->received_date),
+            'reported_date' => convertToDateTimeString($this->reported_date),
+            'collected_date' => convertToDateTimeString($this->collected_date),
             'results' => $cleanedResults,
         ]);
-    }
-
-    private function checkIcno($icno): array
-    {
-        $type = Patient::passport;
-        $gender = null;
-        $age = null;
-
-        if (strlen($icno) === 12) {
-            $year = (int) substr($icno, 0, 2);
-            $month = (int) substr($icno, 2, 2);
-            $day = (int) substr($icno, 4, 2);
-            $lastDigit = (int) substr($icno, -1);
-
-            $currentYear = (int) date('Y');
-            $fullYear = $year > ($currentYear % 100) ? 1900 + $year : 2000 + $year;
-
-            if (checkdate($month, $day, $fullYear)) {
-                $type = Patient::nric;
-
-                $gender = $lastDigit % 2 === 0 ? Patient::female : Patient::male;
-
-                $age = $currentYear - $fullYear;
-            }
-        }
-
-        return [
-            'icno' => $icno,
-            'type' => $type,
-            'gender' => $gender,
-            'age' => $age,
-        ];
-    }
-
-
-    private function convertToDateTimeString($date)
-    {
-        $timestamp = strtotime($date);
-
-        if ($timestamp === false) {
-            return null;
-        }
-
-        return date('Y-m-d H:i:s', $timestamp);
     }
 }

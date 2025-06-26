@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('icno');
             $table->string('ic_type')->default('NRIC'); //IC or PN (passport number)
+            $table->string('name')->nullable();
+            $table->string('dob')->nullable();
             $table->string('age')->nullable();
             $table->string('gender')->nullable(); //F or M
             $table->softDeletes();

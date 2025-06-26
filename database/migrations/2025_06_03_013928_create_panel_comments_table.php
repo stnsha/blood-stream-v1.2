@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('panel_comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('panel_item_id');
+            $table->string('identifier')->nullable();
             $table->longText('comment');
             $table->string('sequence')->nullable();
             $table->softDeletes();

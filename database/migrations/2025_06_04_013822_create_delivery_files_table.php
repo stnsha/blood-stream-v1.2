@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('sending_facility');
             $table->string('batch_id');
             $table->unsignedBigInteger('test_result_id')->nullable();
+            $table->longText('json_content');
             $table->string('status');
-            $table->boolean('is_completed')->default(false);
             $table->softDeletes();
             $table->timestamps();
 

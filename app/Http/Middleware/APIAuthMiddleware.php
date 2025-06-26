@@ -20,7 +20,7 @@ class APIAuthMiddleware
         $user = Auth::guard('lab')->user();
 
         if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized. Token is required.'], 401);
         }
 
         $labCredential = LabCredential::where('lab_id', $user->lab_id)->first();
@@ -28,7 +28,6 @@ class APIAuthMiddleware
         if ($labCredential && !in_array($labCredential->role, ['lab', 'admin'])) {
             return response()->json(['error' => 'Access restricted'], 403);
         }
-
         return $next($request);
     }
 }

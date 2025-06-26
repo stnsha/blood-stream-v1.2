@@ -10,5 +10,5 @@ class PanelComment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['panel_item_id', 'comment', 'sequence'];
+    protected $fillable = ['panel_item_id', 'identifier', 'comment', 'sequence'];
 }

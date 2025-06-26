@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class TestResultReport extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'test_result_id',
+        'panel_id',
+        'text',
+        'is_completed',
+    ];
 }

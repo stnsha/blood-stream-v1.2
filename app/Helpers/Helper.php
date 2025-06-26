@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Patient;
 use Carbon\Carbon;
 
 if (!function_exists('generate_lab_code')) {
@@ -24,25 +25,49 @@ if (!function_exists('get_email_abbrv')) {
         return strtoupper(substr($localPart, 0, 3));
     }
 }
-
-if (!function_exists('calculate_age')) {
-    function calculate_age($icno)
+if (!function_exists('checkIcno')) {
+    function checkIcno($icno): array
     {
-        $year = substr($icno, 0, 2);
-        $currentYear = Carbon::now()->year;
-        $currentShortYear = Carbon::now()->format('y');
+        $type = Patient::passport;
+        $gender = null;
+        $age = null;
 
-        $prefix = ($year > $currentShortYear) ? '19' : '20';
-        $fullYear = $prefix . $year;
+        if (strlen($icno) === 12) {
+            $year = (int) substr($icno, 0, 2);
+            $month = (int) substr($icno, 2, 2);
+            $day = (int) substr($icno, 4, 2);
+            $lastDigit = (int) substr($icno, -1);
 
-        $age = $currentYear - $fullYear;
+            $currentYear = (int) date('Y');
+            $fullYear = $year > ($currentYear % 100) ? 1900 + $year : 2000 + $year;
 
-        $lastDigit = substr($icno, -1);
-        $gender = ($lastDigit % 2 == 0) ? 'Female' : 'Male';
+            if (checkdate($month, $day, $fullYear)) {
+                $type = Patient::nric;
+
+                $gender = $lastDigit % 2 === 0 ? Patient::female : Patient::male;
+
+                $age = $currentYear - $fullYear;
+            }
+        }
 
         return [
+            'icno' => $icno,
+            'type' => $type,
+            'gender' => $gender,
             'age' => $age,
-            'gender' => $gender
         ];
+    }
+}
+
+if (!function_exists('convertToDateTimeString')) {
+    function convertToDateTimeString($date)
+    {
+        $timestamp = strtotime($date);
+
+        if ($timestamp === false) {
+            return null;
+        }
+
+        return date('Y-m-d H:i:s', $timestamp);
     }
 }

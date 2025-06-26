@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Lab;
+use App\Models\LabCredential;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,12 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // User::create([
-        //     'name' => 'superadmin',
-        //     'email' => 'anasuharosli.alphac@gmail.com',
-        //     'password' => bcrypt('anasuha97')
-        // ]);
+        $user = User::create([
+            'name' => 'superadmin',
+            'email' => 'anasuharosli.alphac@gmail.com',
+            'password' => bcrypt('fzElFOAz1RU1g8a')
+        ]);
+
 
         $labs = [
             [
@@ -41,5 +43,14 @@ class DatabaseSeeder extends Seeder
                 'status' => 1,
             ]);
         }
+
+        LabCredential::create([
+            'user_id' => $user->id,
+            'lab_id' => 1,
+            'username' => 'DUM1ANA',
+            'password' => bcrypt('fzElFOAz1RU1g8a'),
+            'role' => 'lab',
+            'is_active' => true,
+        ]);
     }
 }

@@ -169,6 +169,7 @@ class PatientController extends Controller
                         'lab_id' => $lab_id,
                         'sending_facility' => $sending_facility,
                         'batch_id' => $batch_id,
+                        'json_content' => json_encode($validated),
                         'status' => DeliveryFile::compl,
                     ]
                 );

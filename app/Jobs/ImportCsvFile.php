@@ -274,7 +274,7 @@ class ImportCsvFile implements ShouldQueue
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
-        ])->post(config('services.api.url') . '/api/v1/patientResults', $data);
+        ])->post(config('services.api.url') . '/api/v1/patient/labResults', $data);
 
         Log::info('API response', ['response' => $response]);
         if ($response->unauthorized()) {
